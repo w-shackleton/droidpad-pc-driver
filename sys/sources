@@ -11,10 +11,9 @@ INCLUDES=..\inc
 
 SOURCES= \
      driver.c  \
-        hid.c  \
-        usb.c  \
-		input.c \
-  droidpad.rc \
+     hid.c  \
+     input.c \
+     droidpad.rc \
 
 INF_NAME=droidpad
 NTTARGETFILE0=$(OBJ_PATH)\$(O)\$(INF_NAME).inf

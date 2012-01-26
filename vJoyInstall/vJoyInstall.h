@@ -25,8 +25,7 @@
 
 #define COMPATIBLE_ID	TEXT("hid_device_system_game")
 #define	INFFILE			TEXT("droidpad.inf")
-#define	HWID_TMPLT		TEXT("root\\VID_%04X&PID_%04X")
-// #define	HWID_TMPLT		TEXT("root\\VID_%04X&PID_%04X&REV_%04X")
+#define	HWID_TMPLT		TEXT("root\\VID_%04X&PID_%04X&REV_%04X")
 #define	HWID_PPJOY0		TEXT("PPJoyBus\\VID_DEAD&PID_BEF0")
 #define	INSTALL_LOG		TEXT("vJoyInstall.log")
 

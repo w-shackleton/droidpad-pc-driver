@@ -1350,8 +1350,7 @@ BOOL GetDevHwId(int argc, PZPWSTR argv, TCHAR * DeviceHWID)
 	if (argc >=4)
 		_stprintf_s(DeviceHWID, MAX_PATH, (TCHAR *)argv[3]);
 	else
-		_stprintf_s(DeviceHWID, MAX_PATH, HWID_TMPLT,VENDOR_N_ID, PRODUCT_N_ID);
-		// _stprintf_s(DeviceHWID, MAX_PATH, HWID_TMPLT,VENDOR_N_ID, PRODUCT_N_ID, VERSION_N);
+		_stprintf_s(DeviceHWID, MAX_PATH, HWID_TMPLT,VENDOR_N_ID, PRODUCT_N_ID, VERSION_N);
 
 	return TRUE;
 }

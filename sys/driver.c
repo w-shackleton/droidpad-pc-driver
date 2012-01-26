@@ -60,6 +60,8 @@ ULONG DebugFlag = 0xff;
     #pragma alloc_text( INIT, DriverEntry )
     #pragma alloc_text( PAGE, dpEvtDeviceAdd)
     #pragma alloc_text( PAGE, dpEvtDriverContextCleanup)
+    #pragma alloc_text( PAGE, dpEvtTimerFunction)
+    #pragma alloc_text( PAGE, copyHidReport)
 #endif
 
 NTSTATUS
@@ -265,6 +267,8 @@ Return Value:
     WdfWaitLockRelease(deviceCollectionLock);
 	/////////////////////////////////////////////////////////////////////////
 
+	// Set all JS values to sane ones
+	resetHidReport(&(devContext->inputs));
 
 	/////////// Create a control device /////////////////////////////////////
     status = dpCreateControlDevice(hDevice);

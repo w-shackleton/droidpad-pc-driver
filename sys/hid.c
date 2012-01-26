@@ -47,8 +47,6 @@ Revision History:
 #endif
 
 #ifdef ALLOC_PRAGMA
-    #pragma alloc_text( PAGE, dpSetFeature)
-    #pragma alloc_text( PAGE, SendVendorCommand)
 #endif
 
 VOID
@@ -478,6 +476,7 @@ Return Value:
         return status;
     }
 
+    // Set static device attribs from defs.h
     deviceAttributes->Size = sizeof (HID_DEVICE_ATTRIBUTES);
     deviceAttributes->VendorID = VENDOR_N_ID;
     deviceAttributes->ProductID = PRODUCT_N_ID;

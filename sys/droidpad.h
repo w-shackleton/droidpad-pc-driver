@@ -95,6 +95,9 @@ typedef UCHAR HID_REPORT_DESCRIPTOR, *PHID_REPORT_DESCRIPTOR;
 
 // HID descriptor of a 6-axis 12-button JS, which DroidPad uses.
 
+// Halfway on each axis
+#define JS_RESTING_PLACE 16384
+
 #ifdef USE_HARDCODED_HID_REPORT_DESCRIPTOR 
 
 CONST  HID_REPORT_DESCRIPTOR       G_DefaultReportDescriptor[79] = {
@@ -236,11 +239,6 @@ dpGetDeviceAttributes(
     IN WDFREQUEST Request
     );
 
-PCHAR
-DbgDevicePowerString(
-    IN WDF_POWER_DEVICE_STATE Type
-    );
-
 NTSTATUS
 dpConfigContReaderForInterruptEndPoint(
     PDEVICE_EXTENSION DeviceContext
@@ -307,6 +305,10 @@ copyInputData(
     IN PINPUT_DATA from,
     OUT PHID_INPUT_REPORT to
      );
+VOID
+resetHidReport(
+				OUT PHID_INPUT_REPORT report
+			  );
 
 #if (OSVER(NTDDI_VERSION) > NTDDI_WIN2K)
 

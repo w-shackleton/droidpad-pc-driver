@@ -10,8 +10,10 @@ CAT=INF2CAT /driver:$(INSTALL_DIR)\$(O)  /os:Vista_X64,7_x64
 CAT=INF2CAT /driver:$(INSTALL_DIR)\$(O)  /os:XP_X86,Vista_x86
 !endif
 
+CERTSTORE="PrivateCertStore"
+
 # Sign Cabinet files
-SIGN=signtool sign /v /s PrivateCertStore $(INSTALL_DIR)\$(O)\*.cat
+SIGN=signtool sign /v /s $(CERTSTORE) $(INSTALL_DIR)\$(O)\*.cat
 
 ####################################################################
 # Creating a KMDF Version String (e.g. 01009)
@@ -56,7 +58,7 @@ $(INSTALL_DIR)\$(O)\$(TARGETNAME).inf: $(OBJ_PATH)\$O\$(TARGETNAME).inf
 
 # Copy vJoy.sys to sub-directory of install 
 $(INSTALL_DIR)\$(O)\$(TARGETNAME).sys: $(OBJ_PATH)\$O\$(TARGETNAME).sys
-	signtool sign /v /s PrivateCertStore $(OBJ_PATH)\$O\$(TARGETNAME).sys
+	signtool sign /v /s $(CERTSTORE) $(OBJ_PATH)\$O\$(TARGETNAME).sys
 	if not exist $(INSTALL_DIR)\$(O) mkdir $(INSTALL_DIR)\$(O)
 	copy $(OBJ_PATH)\$O\$(TARGETNAME).sys  $@
 	
@@ -64,7 +66,7 @@ $(INSTALL_DIR)\$(O)\$(TARGETNAME).sys: $(OBJ_PATH)\$O\$(TARGETNAME).sys
 # Copy correct SHIM (hidkmdf.sys) to sub-directory of install 
 $(INSTALL_DIR)\$(O)\$(SHIM_NAME).sys: 
 	if not exist $(INSTALL_DIR)\$(O) mkdir $(INSTALL_DIR)\$(O)
-	signtool sign /v /s PrivateCertStore $(SHIM_DIR)\$(O)\$(SHIM_NAME).sys
+	signtool sign /v /s $(CERTSTORE) $(SHIM_DIR)\$(O)\$(SHIM_NAME).sys
 	copy $(SHIM_DIR)\$(O)\$(SHIM_NAME).sys  $@
 	
 

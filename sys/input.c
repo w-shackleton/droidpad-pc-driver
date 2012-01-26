@@ -25,7 +25,8 @@ Module Name:
 
 Abstract:
 
-    Code for handling inputs via control device from userland
+    Code for handling inputs via control device from userland.
+    This file is the only entirely new file, not based off code from hidusbfx2
 
 Author:
 
@@ -85,8 +86,6 @@ Return Value:
 	UNICODE_STRING				ntDeviceName, symbolicLinkName;
 	ANSI_STRING					ntDeviceNameA, symbolicLinkNameA;
 
-    //DECLARE_CONST_UNICODE_STRING(ntDeviceName, NTDEVICE_NAME_STRING) ;
-    //DECLARE_CONST_UNICODE_STRING(symbolicLinkName, SYMBOLIC_NAME_STRING) ;
 	DECLARE_CONST_UNICODE_STRING(SDDL_DEVOBJ_SYS_ALL_ADM_RWX_WORLD_RW_RES_R, L"D:P(A;;GA;;;SY)(A;;GRGWGX;;;BA)(A;;GRGW;;;WD)(A;;GR;;;RC)");
 
     PAGED_CODE();
@@ -300,7 +299,7 @@ dpEvtDeviceContextCleanup(
     WdfWaitLockRelease(deviceCollectionLock);
 }
 
-// Device counter modifiers
+// Device counter modifiers - each one acquires and releases the lock.
 
 // Returns the old value
 int
@@ -317,7 +316,7 @@ deviceCounterChange(int difference)
 	WdfWaitLockRelease(deviceCounterLock);
 	return old;
 }
-// Returns 0 on su
+// Returns 0 on failure (similar to boolean type)
 int deviceCounterReset()
 {
 	NTSTATUS status = WdfWaitLockAcquire(deviceCounterLock, NULL);
@@ -330,6 +329,9 @@ int deviceCounterReset()
 	return 1;
 }
 
+/**
+ * gets the current device count
+ */
 int getDeviceCount() {
 	NTSTATUS status = WdfWaitLockAcquire(deviceCounterLock, NULL);
 	int val;
@@ -342,57 +344,6 @@ int getDeviceCount() {
 	return val;
 }
 
-ULONG loadDeviceCount(PWSTR RegistryPathStr)
-{
-	NTSTATUS				status = STATUS_SUCCESS;
-	WDFKEY					SubKey, Key;
-	ULONG					count=0;
-	UNICODE_STRING			EnumUnStr, CountUnStr, RegistryPath; 
-
-	// Create a registry string
-
-
-	// Get the driver registry key
-	RtlInitUnicodeString(&RegistryPath, RegistryPathStr);
-	status =   WdfRegistryOpenKey(NULL, &RegistryPath, GENERIC_READ, WDF_NO_OBJECT_ATTRIBUTES, &Key);
-	if (!NT_SUCCESS(status)) 
-	{
-		TraceEvents(TRACE_LEVEL_ERROR, DBG_PNP,"GetDeviceCount: WdfRegistryOpenKey[1] failed with status 0x%x\n", status);
-		return 0;
-	};
-
-	// Get the driver ENUM registry key
-	RtlInitUnicodeString(&EnumUnStr, L"Enum");
-	status =   WdfRegistryOpenKey(Key, &EnumUnStr, GENERIC_READ, WDF_NO_OBJECT_ATTRIBUTES, &SubKey);
-	if (!NT_SUCCESS(status)) 
-	{
-		TraceEvents(TRACE_LEVEL_ERROR, DBG_PNP,"GetDeviceCount: WdfRegistryOpenKey[2] failed with status 0x%x\n", status);
-		WdfRegistryClose(Key);
-		return 0;
-	};
-
-	// Get the device count
-	RtlInitUnicodeString(&CountUnStr, L"Count");
-	status = WdfRegistryQueryULong(SubKey, &CountUnStr, &count);
-	if (!NT_SUCCESS(status)) 
-	{
-		TraceEvents(TRACE_LEVEL_ERROR, DBG_PNP,"GetDeviceCount: WdfRegistryQueryValue[2] failed with status 0x%x\n", status);
-		WdfRegistryClose(Key);
-		WdfRegistryClose(SubKey);
-		return 0;
-	};
-
-
-	WdfRegistryClose(Key);
-	WdfRegistryClose(SubKey);
-	return count;
-}
-
-/**
- * gets the current device count
- */
-int getDeviceCount();
-
 VOID
 dpEvtIoDeviceControl(
     IN WDFQUEUE     Queue,
@@ -401,6 +352,10 @@ dpEvtIoDeviceControl(
     IN size_t       InputBufferLength,
     IN ULONG        IoControlCode
     )
+/**
+ * This is called when an IOCTL is received from the control device created above.
+ * It is used to receive signals & messages from userland applications (namely DroidPad).
+ */
 {
     NTSTATUS             status= STATUS_SUCCESS;
     WDF_DEVICE_STATE     deviceState;
@@ -443,6 +398,10 @@ copyInputData(
     IN PINPUT_DATA from,
     OUT PHID_INPUT_REPORT to
      )
+/**
+ * Copies input data from the given input data into the HID input report.
+ * Currently these data structures are the same, but they may change in the future.
+ */
 {
 	if(!from || !to) {
 		TraceEvents(TRACE_LEVEL_ERROR, DBG_IOCTL, "copyInputData received a null argument\n");
@@ -454,6 +413,20 @@ copyInputData(
 	to->inputs.axisRX = from->axisRX;
 	to->inputs.axisRY = from->axisRY;
 	to->inputs.axisRZ = from->axisRZ;
-	to->inputs.buttons = from->buttons & 0xFFFF; // First 16 only
+	to->inputs.buttons = from->buttons & 0xFFFF; // First 16 buttons only
 	return;
+}
+
+VOID
+resetHidReport(
+				OUT PHID_INPUT_REPORT report
+			  )
+{
+	report->inputs.axisX = JS_RESTING_PLACE;
+	report->inputs.axisY = JS_RESTING_PLACE;
+	report->inputs.axisZ = JS_RESTING_PLACE;
+	report->inputs.axisRX = JS_RESTING_PLACE;
+	report->inputs.axisRY = JS_RESTING_PLACE;
+	report->inputs.axisRZ = JS_RESTING_PLACE;
+	report->inputs.buttons = 0x0;
 }
