@@ -45,6 +45,13 @@ Revision History:
 #include "input.tmh"
 #endif
 
+#ifdef ALLOC_PRAGMA
+    #pragma alloc_text( PAGE, dpCreateControlDevice)
+    #pragma alloc_text( PAGE, dpDeleteControlDevice)
+    #pragma alloc_text( PAGE, dpEvtDeviceContextCleanup)
+    #pragma alloc_text( PAGE, dpEvtIoDeviceControl)
+#endif
+
 WDFDEVICE controlDevice;
 
 NTSTATUS
@@ -358,10 +365,8 @@ dpEvtIoDeviceControl(
  */
 {
     NTSTATUS             status= STATUS_SUCCESS;
-    WDF_DEVICE_STATE     deviceState;
     WDFDEVICE            hDevice = WdfIoQueueGetDevice(Queue);
-	PCONTROL_DEVICE_EXTENSION			 ControlDevContext = ControlGetData(hDevice);
-	ULONG  bytes;
+    PCONTROL_DEVICE_EXTENSION			 ControlDevContext = ControlGetData(hDevice);
     PDEVICE_EXTENSION    pDevContext = NULL;
     PVOID  buffer;
     size_t  bufSize;

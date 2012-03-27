@@ -383,9 +383,11 @@ dpEvtTimerFunction(
 {
 	NTSTATUS status = STATUS_SUCCESS;
 	PDEVICE_EXTENSION devContext = GetDeviceContext(WdfTimerGetParentObject(Timer));
+	WDFREQUEST request;
+
+	PAGED_CODE();
 
 	// Check for requests, then get if there is one
-	WDFREQUEST request;
 	if(NT_SUCCESS(WdfIoQueueRetrieveNextRequest(devContext->TimerMsgQueue, &request))) {
 		size_t bytesReturned;
 		PHID_INPUT_REPORT hidReport = NULL;
@@ -414,6 +416,8 @@ VOID copyHidReport(
 				IN PHID_INPUT_REPORT from,
 				OUT PHID_INPUT_REPORT to)
 {
+	PAGED_CODE();
+
 		if(from == NULL || to == NULL) {
 				TraceEvents(TRACE_LEVEL_ERROR, DBG_IOCTL, "copyHidReport received a null argument\n");
 				return;

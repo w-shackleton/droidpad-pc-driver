@@ -449,7 +449,6 @@ Return Value:
 {
     NTSTATUS                 status = STATUS_SUCCESS;
     PHID_DEVICE_ATTRIBUTES   deviceAttributes = NULL;
-    PUSB_DEVICE_DESCRIPTOR   usbDeviceDescriptor = NULL;
     PDEVICE_EXTENSION        deviceInfo = NULL;
 
     TraceEvents(TRACE_LEVEL_VERBOSE, DBG_IOCTL,

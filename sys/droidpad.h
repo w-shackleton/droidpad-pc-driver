@@ -253,10 +253,7 @@ dpCompleteReadReport(
 
 EVT_WDF_OBJECT_CONTEXT_CLEANUP dpEvtDriverContextCleanup;
 
-VOID
-dpEvtTimerFunction(
-    IN WDFTIMER  Timer
-    );
+EVT_WDF_TIMER dpEvtTimerFunction;
 
 VOID copyHidReport(
     IN PHID_INPUT_REPORT from,
@@ -266,11 +263,12 @@ NTSTATUS
 dpCreateControlDevice(
     WDFDEVICE Device
     );
-
 VOID
-dpEvtDeviceContextCleanup(
-    IN WDFDEVICE Device
+dpDeleteControlDevice(
+    WDFDEVICE Device
     );
+
+EVT_WDF_OBJECT_CONTEXT_CLEANUP dpEvtDeviceContextCleanup;
 
 int deviceCounterChange(int difference);
 #define deviceCounterIncrement() deviceCounterChange(1)
@@ -286,14 +284,7 @@ ULONG loadDeviceCount(PWSTR RegistryPath);
  */
 int getDeviceCount();
 
-VOID
-dpEvtIoDeviceControl(
-    IN WDFQUEUE     Queue,
-    IN WDFREQUEST   Request,
-    IN size_t       OutputBufferLength,
-    IN size_t       InputBufferLength,
-    IN ULONG        IoControlCode
-    );
+EVT_WDF_IO_QUEUE_IO_DEVICE_CONTROL dpEvtIoDeviceControl;
 
 PCHAR
 DbgHidInternalIoctlString(
@@ -327,19 +318,11 @@ dpSetFeature(
 EVT_WDF_IO_QUEUE_IO_CANCELED_ON_QUEUE dpEvtIoCanceledOnQueue;
 
 NTSTATUS
-dpGetSwitchState(
-    IN WDFDEVICE Device,
-    OUT PUCHAR SwitchState
-    );
-
-NTSTATUS
 SendVendorCommand(
     IN WDFDEVICE Device,
     IN UCHAR VendorCommand,
     IN PUCHAR CommandData
     );
-
-EVT_WDF_TIMER dpEvtTimerFunction;
 
 #endif   //_DROIDPAD_DRIVER_H_
 
