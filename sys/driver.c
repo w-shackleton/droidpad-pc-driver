@@ -59,9 +59,9 @@ ULONG DebugFlag = 0xff;
 #ifdef ALLOC_PRAGMA
     #pragma alloc_text( INIT, DriverEntry )
     #pragma alloc_text( PAGE, dpEvtDeviceAdd)
-    #pragma alloc_text( PAGE, dpEvtDriverContextCleanup)
-    #pragma alloc_text( PAGE, dpEvtTimerFunction)
-    #pragma alloc_text( PAGE, copyHidReport)
+    // #pragma alloc_text( PAGE, dpEvtDriverContextCleanup)
+    // #pragma alloc_text( PAGE, dpEvtTimerFunction)
+    // #pragma alloc_text( PAGE, copyHidReport)
 #endif
 
 NTSTATUS
@@ -363,8 +363,6 @@ Return Value:
 
 --*/
 {
-    PAGED_CODE ();
-
     UNREFERENCED_PARAMETER(Driver);
 
     // TraceEvents(TRACE_LEVEL_INFORMATION, DBG_INIT, "Exit dpEvtDriverContextCleanup\n");
@@ -384,8 +382,6 @@ dpEvtTimerFunction(
 	NTSTATUS status = STATUS_SUCCESS;
 	PDEVICE_EXTENSION devContext = GetDeviceContext(WdfTimerGetParentObject(Timer));
 	WDFREQUEST request;
-
-	PAGED_CODE();
 
 	// Check for requests, then get if there is one
 	if(NT_SUCCESS(WdfIoQueueRetrieveNextRequest(devContext->TimerMsgQueue, &request))) {
@@ -416,8 +412,6 @@ VOID copyHidReport(
 				IN PHID_INPUT_REPORT from,
 				OUT PHID_INPUT_REPORT to)
 {
-	PAGED_CODE();
-
 		if(from == NULL || to == NULL) {
 				TraceEvents(TRACE_LEVEL_ERROR, DBG_IOCTL, "copyHidReport received a null argument\n");
 				return;
