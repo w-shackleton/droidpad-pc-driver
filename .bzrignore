@@ -1,9 +1,0 @@
-*.log
-out/*
-hidmapper/objchk_*
-hidmapper/objfre_*
-sys/objchk_*
-sys/objfre_*
-vJoyInstall/CmdLine/objchk_*
-vJoyInstall/CmdLine/objfre_*
-inc/hidport_REMOVE.h
